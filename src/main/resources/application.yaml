@@ -1,0 +1,34 @@
+quarkus:
+  datasource:
+    db-kind: postgresql
+    username: bankx
+    password: bankx
+    jdbc:
+      url: jdbc:postgresql://localhost:5432/bankx
+      max-size: 8
+
+  smallrye-openapi:
+    path: /openapi
+
+  swagger-ui:
+    path: /swagger-ui
+
+  oidc:
+    client-id: backend-service
+    credentials:
+      secret: secret
+    tls:
+      verification: none
+
+  keycloak:
+    policy-enforcer:
+      enable: true
+    devservices:
+      realm-path: quarkus-realm.json
+
+# Adding a %prod. profile prefix to quarkus.oidc.auth-server-url ensures that Dev Services for Keycloak
+# launches a container for you when the application is run in dev mode
+prod:
+  quarkus:
+    oidc:
+      auth-server-url: https://localhost:8543/realms/quarkus

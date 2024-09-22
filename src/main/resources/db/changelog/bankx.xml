@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+           http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <!-- Create New Schema -->
+    <changeSet id="0" author="koman">
+        <sql>
+            CREATE SCHEMA IF NOT EXISTS bankx;
+        </sql>
+    </changeSet>
+
+    <!-- Create Customer Table -->
+    <changeSet id="1" author="koman">
+        <createSequence schemaName="bankx" cacheSize="1" cycle="false" dataType="bigint" incrementBy="1" maxValue="9223372036854775807" minValue="1" sequenceName="customer_id_seq" startValue="5"/>
+
+        <createTable tableName="customer" schemaName="bankx">
+            <column name="id" type="bigint" defaultValueSequenceNext="customer_id_seq">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="phone_number" type="varchar(20)"/>
+            <column name="created_at" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP"/>
+        </createTable>
+
+        <insert tableName="customer" schemaName="bankx">
+            <column name="id" value="1"/>
+            <column name="name" value="Koman Rudden"/>
+            <column name="email" value="koman@example.com"/>
+            <column name="phone_number" value="123456789"/>
+        </insert>
+
+        <insert tableName="customer" schemaName="bankx">
+            <column name="id" value="2"/>
+            <column name="name" value="Mirelle Rudden"/>
+            <column name="email" value="mirelle@example.com"/>
+            <column name="phone_number" value="987654321"/>
+        </insert>
+
+        <insert tableName="customer" schemaName="bankx">
+            <column name="id" value="3"/>
+            <column name="name" value="Kade Rudden"/>
+            <column name="email" value="kade@example.com"/>
+            <column name="phone_number" value="555555555"/>
+        </insert>
+
+        <insert tableName="customer" schemaName="bankx">
+            <column name="id" value="4"/>
+            <column name="name" value="Marcelle Rudden"/>
+            <column name="email" value="marcelle@example.com"/>
+            <column name="phone_number" value="444444444"/>
+        </insert>
+    </changeSet>
+
+    <!-- Create Account Type Table -->
+    <changeSet id="2" author="koman">
+        <createSequence schemaName="bankx" cacheSize="1" cycle="false" dataType="bigint" incrementBy="1" maxValue="9223372036854775807" minValue="1" sequenceName="account_type_id_seq" startValue="3"/>
+
+        <createTable tableName="account_type" schemaName="bankx">
+            <column name="id" type="bigint" defaultValueSequenceNext="account_type_id_seq">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="type" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="text"/>
+        </createTable>
+
+        <insert tableName="account_type" schemaName="bankx">
+            <column name="id" value="1"/>
+            <column name="type" value="CHEQUE"/>
+            <column name="description" value="Current account for daily transactions"/>
+        </insert>
+        <insert tableName="account_type" schemaName="bankx">
+            <column name="id" value="2"/>
+            <column name="type" value="SAVINGS"/>
+            <column name="description" value="General savings account"/>
+        </insert>
+    </changeSet>
+
+    <!-- Create Transaction Type Table -->
+    <changeSet id="3" author="koman">
+        <createSequence schemaName="bankx" cacheSize="1" cycle="false" dataType="bigint" incrementBy="1" maxValue="9223372036854775807" minValue="1" sequenceName="transaction_type_id_seq" startValue="3"/>
+
+        <createTable tableName="transaction_type" schemaName="bankx">
+            <column name="id" type="bigint" defaultValueSequenceNext="transaction_type_id_seq">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="type" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <insert tableName="transaction_type" schemaName="bankx">
+            <column name="type" value="DEBIT"/>
+        </insert>
+        <insert tableName="transaction_type" schemaName="bankx">
+            <column name="type" value="CREDIT"/>
+        </insert>
+    </changeSet>
+
+    <!-- Create Account Table -->
+    <changeSet id="4" author="koman">
+        <createSequence schemaName="bankx" cacheSize="1" cycle="false" dataType="bigint" incrementBy="1" maxValue="9223372036854775807" minValue="1" sequenceName="account_id_seq" startValue="100000"/>
+
+        <createTable tableName="account" schemaName="bankx">
+            <column name="id" type="bigint" defaultValueSequenceNext="account_id_seq">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="customer_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="bank_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="account_type_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="balance" type="decimal(15,2)" defaultValue="0.00"/>
+            <column name="created_at" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP"/>
+        </createTable>
+
+        <!-- Add Foreign Key Constraint from Account Table to Customer Table -->
+        <addForeignKeyConstraint baseTableName="account"
+                                  baseColumnNames="customer_id"
+                                  constraintName="account_customer_fk"
+                                  referencedTableName="customer"
+                                  referencedColumnNames="id"
+                                  onDelete="CASCADE"
+                                  onUpdate="CASCADE"/>
+
+        <!-- Add Foreign Key Constraint from Account Table to Account Type Table -->
+        <addForeignKeyConstraint baseTableName="account"
+                                    baseColumnNames="account_type_id"
+                                    constraintName="account_account_type_fk"
+                                    referencedTableName="account_type"
+                                    referencedColumnNames="id"
+                                    onDelete="CASCADE"/>
+
+    </changeSet>
+
+    <!-- Create Bank Table -->
+    <changeSet id="5" author="koman">
+        <createSequence schemaName="bankx" cacheSize="1" cycle="false" dataType="bigint" incrementBy="1" maxValue="9223372036854775807" minValue="1" sequenceName="bank_id_seq" startValue="5"/>
+
+        <createTable tableName="bank" schemaName="bankx">
+            <column name="id" type="bigint" defaultValueSequenceNext="bank_id_seq">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP"/>
+        </createTable>
+
+        <addUniqueConstraint columnNames="name" tableName="bank" constraintName="name_uk"/>
+
+        <insert tableName="bank" schemaName="bankx">
+            <column name="id" value="1"/>
+            <column name="name" value="BankX"/>
+        </insert>
+
+        <insert tableName="bank" schemaName="bankx">
+            <column name="id" value="2"/>
+            <column name="name" value="Investec"/>
+        </insert>
+
+        <insert tableName="bank" schemaName="bankx">
+            <column name="id" value="3"/>
+            <column name="name" value="FNB"/>
+        </insert>
+
+        <insert tableName="bank" schemaName="bankx">
+            <column name="id" value="4"/>
+            <column name="name" value="ABSA"/>
+        </insert>
+
+        <insert tableName="bank" schemaName="bankx">
+            <column name="id" value="5"/>
+            <column name="name" value="Standard Bank"/>
+        </insert>
+    </changeSet>
+
+    <!-- Create Transaction Table -->
+    <changeSet id="6" author="koman">
+        <createSequence schemaName="bankx" cacheSize="1" cycle="false" dataType="bigint" incrementBy="1" maxValue="9223372036854775807" minValue="1" sequenceName="transaction_id_seq" startValue="100000"/>
+
+        <createTable tableName="transaction" schemaName="bankx">
+            <column name="id" type="bigint" defaultValueSequenceNext="transaction_id_seq">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="customer_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="account_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="transaction_type_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="amount" type="decimal(15,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="transaction_fee" type="decimal(15,2)" defaultValue="0.00"/>
+            <column name="transaction_date" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="description" type="text"/>
+        </createTable>
+
+        <!-- Add Foreign Key Constraints from Transaction Table to Customer Table -->
+        <addForeignKeyConstraint baseTableName="transaction"
+                                  baseColumnNames="customer_id"
+                                  constraintName="transaction_customer_fk"
+                                  referencedTableName="customer"
+                                  referencedColumnNames="id"
+                                  onDelete="CASCADE"
+                                  onUpdate="CASCADE"/>
+
+        <!-- Add Foreign Key Constraint from Transaction Table to Account Table -->
+        <addForeignKeyConstraint baseTableName="transaction"
+                                  baseColumnNames="account_id"
+                                  constraintName="transaction_account_fk"
+                                  referencedTableName="account"
+                                  referencedColumnNames="id"
+                                  onDelete="CASCADE"
+                                  onUpdate="CASCADE"/>
+
+        <!-- Add Foreign Key Constraint from Transaction Table to Transaction Type Table -->
+        <addForeignKeyConstraint baseTableName="transaction"
+                                  baseColumnNames="transaction_type_id"
+                                  constraintName="transaction_transaction_type_fk"
+                                  referencedTableName="transaction_type"
+                                  referencedColumnNames="id"
+                                  onDelete="CASCADE"
+                                  onUpdate="CASCADE"/>
+    </changeSet>
+
+    <!-- Create Notification Table -->
+    <changeSet id="7" author="koman">
+        <createSequence schemaName="bankx" cacheSize="1" cycle="false" dataType="bigint" incrementBy="1" maxValue="9223372036854775807" minValue="1" sequenceName="notification_id_seq" startValue="9"/>
+
+        <createTable tableName="notification" schemaName="bankx">
+            <column name="id" type="bigint" defaultValueSequenceNext="notification_id_seq">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="customer_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="transaction_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="message" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP"/>
+        </createTable>
+
+        <!-- Add Foreign Key Constraints from Notification Table to Customer Table -->
+        <addForeignKeyConstraint baseTableName="notification"
+                                  baseColumnNames="customer_id"
+                                  constraintName="notification_customer_fk"
+                                  referencedTableName="customer"
+                                  referencedColumnNames="id"
+                                  onDelete="CASCADE"
+                                  onUpdate="CASCADE"/>
+
+        <!-- Add Foreign Key Constraints from Notification Table to Transaction Table -->
+        <addForeignKeyConstraint baseTableName="notification"
+                                  baseColumnNames="transaction_id"
+                                  constraintName="notification_transaction_fk"
+                                  referencedTableName="transaction"
+                                  referencedColumnNames="id"
+                                  onDelete="CASCADE"
+                                  onUpdate="CASCADE"/>
+    </changeSet>
+
+    <!-- Add Foreign Key Constraint from Transaction Table to Bank Table -->
+    <changeSet id="8" author="koman">
+        <addForeignKeyConstraint baseTableName="account"
+                                baseColumnNames="bank_id"
+                                constraintName="account_bank_fk"
+                                referencedTableName="bank"
+                                referencedColumnNames="id"
+                                onDelete="CASCADE"
+                                onUpdate="CASCADE"/>
+
+        <!-- Add Data -->
+        <insert tableName="account" schemaName="bankx">
+            <column name="customer_id" value="1"/>
+            <column name="bank_id" value="1"/>
+            <column name="account_type_id" value="1"/>
+            <column name="balance" value="0.00"/>
+        </insert>
+        <insert tableName="account" schemaName="bankx">
+            <column name="customer_id" value="1"/>
+            <column name="bank_id" value="1"/>
+            <column name="account_type_id" value="2"/>
+            <column name="balance" value="0.00"/>
+        </insert>
+        <insert tableName="account" schemaName="bankx">
+            <column name="customer_id" value="2"/>
+            <column name="bank_id" value="2"/>
+            <column name="account_type_id" value="1"/>
+            <column name="balance" value="0.00"/>
+        </insert>
+        <insert tableName="account" schemaName="bankx">
+            <column name="customer_id" value="2"/>
+            <column name="bank_id" value="2"/>
+            <column name="account_type_id" value="2"/>
+            <column name="balance" value="0.00"/>
+        </insert>
+        <insert tableName="account" schemaName="bankx">
+            <column name="customer_id" value="3"/>
+            <column name="bank_id" value="3"/>
+            <column name="account_type_id" value="1"/>
+            <column name="balance" value="0.00"/>
+        </insert>
+        <insert tableName="account" schemaName="bankx">
+            <column name="customer_id" value="3"/>
+            <column name="bank_id" value="3"/>
+            <column name="account_type_id" value="2"/>
+            <column name="balance" value="0.00"/>
+        </insert>
+        <insert tableName="account" schemaName="bankx">
+            <column name="customer_id" value="4"/>
+            <column name="bank_id" value="4"/>
+            <column name="account_type_id" value="1"/>
+            <column name="balance" value="0.00"/>
+        </insert>
+        <insert tableName="account" schemaName="bankx">
+            <column name="customer_id" value="4"/>
+            <column name="bank_id" value="4"/>
+            <column name="account_type_id" value="2"/>
+            <column name="balance" value="0.00"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>
