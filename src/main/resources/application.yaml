@@ -1,4 +1,10 @@
 quarkus:
+  log:
+    level: INFO
+    category:
+      io.quarkus.keycloak:
+        level: DEBUG
+
   datasource:
     db-kind: postgresql
     username: bankx
@@ -13,10 +19,19 @@ quarkus:
   swagger-ui:
     path: /swagger-ui
 
+  http:
+    port: 8081
+    auth:
+      permission:
+        authenticated:
+          paths: /api/v1/accounts/*
+          policy: authenticated
+
   oidc:
-    client-id: backend-service
+    auth-server-url: http://localhost:8080/realms/bankx
+    client-id: bankx
     credentials:
-      secret: secret
+      secret: tAsuD3jDrfOsy1g8dGJTIlBsBVxsdEUu # never commit an unencrypted secret
     tls:
       verification: none
 
@@ -24,9 +39,9 @@ quarkus:
     policy-enforcer:
       enable: true
     devservices:
-      realm-path: quarkus-realm.json
+      enabled: false
 
-# Adding a %prod. profile prefix to quarkus.oidc.auth-server-url ensures that Dev Services for Keycloak
+# Adding a   prod. profile prefix to quarkus.oidc.auth-server-url ensures that Dev Services for Keycloak
 # launches a container for you when the application is run in dev mode
 prod:
   quarkus:

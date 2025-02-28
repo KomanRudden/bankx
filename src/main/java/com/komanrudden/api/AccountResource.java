@@ -30,7 +30,7 @@ public class AccountResource extends AbstractResource<AccountEntity, AccountRepo
     @APIResponse(responseCode = HttpStatus.OK,
             description = "Successfully retrieved the list of all accounts",
             content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = AccountEntity.class)))
-    @APIResponse(responseCode = HttpStatus.INTERNAL_SERVER_ERROR, description = "Internal server error")
+    @APIResponse(responseCode = HttpStatus.NOT_FOUND, description = "Account not found")
     public Response getAllAccounts() {
         return getAll();
     }
