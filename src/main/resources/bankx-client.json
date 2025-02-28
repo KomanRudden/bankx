@@ -1,0 +1,31 @@
+{
+  "realm": "quarkus",
+  "enabled": true,
+  "roles": {
+    "realm": [
+      {"name": "user", "description": "User role"},
+      {"name": "uma_protection", "description": "UMA protection role"}
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "bankx",
+      "secret": "bankx",
+      "clientAuthenticatorType": "client-secret",
+      "enabled": true,
+      "authorizationServicesEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": true
+    }
+  ],
+  "users": [
+    {
+      "username": "koman",
+      "enabled": true,
+      "credentials": [
+        {"type": "password", "value": "bankx"}
+      ],
+      "realmRoles": ["user"]
+    }
+  ]
+}
